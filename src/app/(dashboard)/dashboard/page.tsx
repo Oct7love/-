@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -66,10 +65,9 @@ const statusMap = {
 };
 
 function scoreColor(score: number) {
-  if (score >= 90) return "text-emerald-600";
-  if (score >= 70) return "text-emerald-600";
-  if (score >= 50) return "text-amber-500";
-  return "text-red-500";
+  if (score >= 80) return "text-[#34c759]";
+  if (score >= 60) return "text-[#ff9f0a]";
+  return "text-[#ff3b30]";
 }
 
 function formatDate(dateStr: string) {
@@ -104,7 +102,10 @@ export default function DashboardPage() {
     fetchResumes();
   }, [fetchResumes]);
 
-  async function handleCreateResume(sourceType: "manual" | "template" = "manual", templateId?: string) {
+  async function handleCreateResume(
+    sourceType: "manual" | "template" = "manual",
+    templateId?: string
+  ) {
     setActionLoading("create");
     try {
       const res = await fetch("/api/resumes", {
@@ -211,26 +212,20 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
-            <div className="h-4 w-48 bg-gray-100 rounded mt-2 animate-pulse" />
+            <div className="h-8 w-32 bg-[#e8e8ed] dark:bg-[#38383a] rounded-lg animate-pulse" />
+            <div className="h-4 w-48 bg-[#e8e8ed] dark:bg-[#38383a] rounded-lg mt-2 animate-pulse" />
           </div>
         </div>
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="pb-3">
-                <div className="h-12 w-12 rounded-2xl bg-gray-100" />
-                <div className="h-5 w-32 bg-gray-100 rounded mt-3" />
-                <div className="h-4 w-24 bg-gray-50 rounded mt-1" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-8 w-20 bg-gray-100 rounded mb-4" />
-                <div className="flex gap-2">
-                  <div className="h-8 flex-1 bg-gray-100 rounded" />
-                  <div className="h-8 flex-1 bg-gray-100 rounded" />
-                </div>
-              </CardContent>
-            </Card>
+            <div
+              key={i}
+              className="rounded-2xl bg-white dark:bg-[#1c1c1e] border border-[#d2d2d7]/60 dark:border-[#38383a] p-6 animate-pulse"
+            >
+              <div className="h-12 w-12 rounded-2xl bg-[#e8e8ed] dark:bg-[#38383a]" />
+              <div className="h-5 w-32 bg-[#e8e8ed] dark:bg-[#38383a] rounded-lg mt-4" />
+              <div className="h-4 w-24 bg-[#e8e8ed] dark:bg-[#38383a] rounded-lg mt-2" />
+            </div>
           ))}
         </div>
       </div>
@@ -241,147 +236,170 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">我的简历</h1>
-          <p className="text-gray-500 mt-1">管理和优化你的简历</p>
+          <h1 className="text-[24px] font-semibold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+            我的简历
+          </h1>
+          <p className="text-[#86868b] text-[14px] mt-1">管理和优化你的简历</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setUploadOpen(true)}>
-            <Upload className="mr-2 h-4 w-4" />
-            上传简历
+          <Button
+            variant="outline"
+            onClick={() => setUploadOpen(true)}
+            className="rounded-lg border-[#d2d2d7] dark:border-[#48484a] text-[13px] hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e]"
+          >
+            <Upload className="mr-1.5 h-4 w-4" />
+            上传
           </Button>
-          <Button onClick={() => setNewResumeOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            新建简历
+          <Button
+            onClick={() => setNewResumeOpen(true)}
+            className="rounded-lg bg-[#0071e3] hover:bg-[#0077ED] text-[13px]"
+          >
+            <Plus className="mr-1.5 h-4 w-4" />
+            新建
           </Button>
         </div>
       </div>
 
       {resumes.length === 0 && (
         <div className="grid gap-4 md:grid-cols-3">
-          <Card
-            className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 border-dashed"
-            onClick={() => setUploadOpen(true)}
-          >
-            <CardContent className="pt-6 text-center space-y-3">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                <FileUp className="h-6 w-6 text-emerald-600" />
-              </div>
-              <h3 className="font-semibold">上传 PDF / Word</h3>
-              <p className="text-sm text-gray-500">
-                上传已有简历，AI 自动解析内容
-              </p>
-            </CardContent>
-          </Card>
-          <Card
-            className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 border-dashed"
-            onClick={() => handleCreateResume("manual")}
-          >
-            <CardContent className="pt-6 text-center space-y-3">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                <PenLine className="h-6 w-6 text-emerald-600" />
-              </div>
-              <h3 className="font-semibold">在线填写</h3>
-              <p className="text-sm text-gray-500">
-                从零开始，分模块填写简历
-              </p>
-            </CardContent>
-          </Card>
-          <Link href="/templates">
-            <Card className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 border-dashed h-full">
-              <CardContent className="pt-6 text-center space-y-3">
-                <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                  <Palette className="h-6 w-6 text-emerald-600" />
+          {[
+            {
+              icon: FileUp,
+              title: "上传 PDF / Word",
+              desc: "上传已有简历，AI 自动解析内容",
+              onClick: () => setUploadOpen(true),
+            },
+            {
+              icon: PenLine,
+              title: "在线填写",
+              desc: "从零开始，分模块填写简历",
+              onClick: () => handleCreateResume("manual"),
+            },
+            {
+              icon: Palette,
+              title: "从模板开始",
+              desc: "选择行业模板，快速创建",
+              href: "/templates",
+            },
+          ].map((item) => {
+            const content = (
+              <div className="rounded-2xl bg-white dark:bg-[#1c1c1e] border border-dashed border-[#d2d2d7] dark:border-[#48484a] p-6 text-center space-y-3 cursor-pointer hover:border-[#0071e3] hover:shadow-sm transition-all">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-[#f5f5f7] dark:bg-[#2c2c2e] flex items-center justify-center">
+                  <item.icon className="h-6 w-6 text-[#0071e3]" />
                 </div>
-                <h3 className="font-semibold">从模板开始</h3>
-                <p className="text-sm text-gray-500">
-                  选择行业模板，快速创建
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+                <h3 className="font-semibold text-[15px] text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  {item.title}
+                </h3>
+                <p className="text-[13px] text-[#86868b]">{item.desc}</p>
+              </div>
+            );
+
+            if ("href" in item) {
+              return (
+                <Link key={item.title} href={item.href!}>
+                  {content}
+                </Link>
+              );
+            }
+            return (
+              <div key={item.title} onClick={item.onClick}>
+                {content}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {resumes.length > 0 && (
-        <div className={`grid gap-4 ${resumes.length <= 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"}`}>
+        <div
+          className={`grid gap-4 ${
+            resumes.length <= 2
+              ? "sm:grid-cols-2"
+              : "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          }`}
+        >
           {resumes.map((resume) => (
-            <Card
+            <div
               key={resume.id}
-              className="group transition-all hover:shadow-md hover:-translate-y-0.5"
+              className="group rounded-2xl bg-white dark:bg-[#1c1c1e] border border-[#d2d2d7]/60 dark:border-[#38383a] p-5 transition-all hover:shadow-md hover:-translate-y-0.5"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
-                    <FileText className="h-6 w-6 text-emerald-600" />
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted">
-                      <MoreVertical className="h-4 w-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => handleCopy(resume.id)}
-                        disabled={actionLoading === resume.id}
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        复制
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => setDeleteConfirmId(resume.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        删除
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              <div className="flex items-start justify-between">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e]">
+                  <FileText className="h-5 w-5 text-[#0071e3]" />
                 </div>
-                <CardTitle className="mt-3 text-lg">{resume.title}</CardTitle>
-                <CardDescription className="flex items-center gap-2">
-                  <Badge variant={statusMap[resume.status]?.variant ?? "secondary"}>
-                    {statusMap[resume.status]?.label ?? resume.status}
-                  </Badge>
-                  <span>· 更新于 {formatDate(resume.updatedAt)}</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {resume.lastScore !== null ? (
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-sm text-gray-500">诊断分数</span>
-                    <span
-                      className={`text-2xl font-bold ${scoreColor(resume.lastScore)}`}
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e]">
+                    <MoreVertical className="h-4 w-4 text-[#86868b]" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => handleCopy(resume.id)}
+                      disabled={actionLoading === resume.id}
                     >
-                      {resume.lastScore}
-                    </span>
-                    <span className="text-sm text-gray-400">/100</span>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-400 mb-4">尚未诊断</p>
-                )}
-                <div className="flex gap-2">
-                  <Link
-                    href={`/editor/${resume.id}`}
-                    className={cn(
-                      buttonVariants({ variant: "outline", size: "sm" }),
-                      "flex-1"
-                    )}
+                      <Copy className="h-4 w-4 mr-2" />
+                      复制
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-[#ff3b30]"
+                      onClick={() => setDeleteConfirmId(resume.id)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      删除
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <h3 className="mt-3 text-[15px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
+                {resume.title}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge
+                  variant={statusMap[resume.status]?.variant ?? "secondary"}
+                >
+                  {statusMap[resume.status]?.label ?? resume.status}
+                </Badge>
+                <span className="text-[12px] text-[#86868b]">
+                  {formatDate(resume.updatedAt)}
+                </span>
+              </div>
+
+              {resume.lastScore !== null ? (
+                <div className="flex items-baseline gap-1 mt-4">
+                  <span
+                    className={`text-[28px] font-bold ${scoreColor(resume.lastScore)}`}
                   >
-                    <Pencil className="mr-1 h-3 w-3" />
-                    编辑
-                  </Link>
-                  <Link
-                    href={`/editor/${resume.id}`}
-                    className={cn(
-                      buttonVariants({ size: "sm" }),
-                      "flex-1 bg-emerald-600 hover:bg-emerald-700"
-                    )}
-                  >
-                    <Sparkles className="mr-1 h-3 w-3" />
-                    诊断
-                  </Link>
+                    {resume.lastScore}
+                  </span>
+                  <span className="text-[13px] text-[#86868b]">/100</span>
                 </div>
-              </CardContent>
-            </Card>
+              ) : (
+                <p className="text-[13px] text-[#aeaeb2] mt-4">尚未诊断</p>
+              )}
+
+              <div className="flex gap-2 mt-4">
+                <Link
+                  href={`/editor/${resume.id}`}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "flex-1 rounded-lg border-[#d2d2d7] dark:border-[#48484a] text-[13px]"
+                  )}
+                >
+                  <Pencil className="mr-1 h-3 w-3" />
+                  编辑
+                </Link>
+                <Link
+                  href={`/editor/${resume.id}`}
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "flex-1 rounded-lg bg-[#0071e3] hover:bg-[#0077ED] text-[13px]"
+                  )}
+                >
+                  <Sparkles className="mr-1 h-3 w-3" />
+                  诊断
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -399,28 +417,30 @@ export default function DashboardPage() {
         <MockInterview />
       </div>
 
-      {/* AI usage card */}
-      <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
-        <CardContent className="flex items-center justify-between py-6">
-          <div className="space-y-2">
+      {/* Summary card */}
+      <div className="rounded-2xl bg-[#1d1d1f] dark:bg-[#f5f5f7] p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold">简历管理</span>
+              <Sparkles className="h-5 w-5 text-[#0071e3]" />
+              <span className="font-semibold text-[15px] text-white dark:text-[#1d1d1f]">
+                简历管理
+              </span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-[13px] text-[#86868b]">
               共 {resumes.length} 份简历 ·{" "}
               {resumes.filter((r) => r.lastScore !== null).length} 份已诊断
             </p>
           </div>
           <Link
             href="/pricing"
-            className={cn(buttonVariants({ variant: "outline" }), "border-emerald-300")}
+            className="inline-flex items-center gap-1 rounded-lg bg-[#0071e3] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#0077ED] transition-colors"
           >
             升级专业版
-            <ArrowRight className="ml-1 h-3 w-3" />
+            <ArrowRight className="h-3 w-3" />
           </Link>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Upload dialog */}
       <UploadDialog
@@ -441,14 +461,18 @@ export default function DashboardPage() {
                 setNewResumeOpen(false);
                 setUploadOpen(true);
               }}
-              className="flex items-center gap-4 rounded-xl border p-4 text-left hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-4 rounded-xl border border-[#d2d2d7] dark:border-[#48484a] p-4 text-left hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                <FileUp className="h-5 w-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] flex items-center justify-center shrink-0">
+                <FileUp className="h-5 w-5 text-[#0071e3]" />
               </div>
               <div>
-                <div className="font-medium text-sm">上传已有简历</div>
-                <div className="text-xs text-gray-500">支持 PDF、Word、TXT 格式</div>
+                <div className="font-medium text-[14px] text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  上传已有简历
+                </div>
+                <div className="text-[12px] text-[#86868b]">
+                  支持 PDF、Word、TXT 格式
+                </div>
               </div>
             </button>
             <button
@@ -457,31 +481,39 @@ export default function DashboardPage() {
                 handleCreateResume("manual");
               }}
               disabled={actionLoading === "create"}
-              className="flex items-center gap-4 rounded-xl border p-4 text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex items-center gap-4 rounded-xl border border-[#d2d2d7] dark:border-[#48484a] p-4 text-left hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] transition-colors disabled:opacity-50"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] flex items-center justify-center shrink-0">
                 {actionLoading === "create" ? (
-                  <Loader2 className="h-5 w-5 text-emerald-600 animate-spin" />
+                  <Loader2 className="h-5 w-5 text-[#0071e3] animate-spin" />
                 ) : (
-                  <PenLine className="h-5 w-5 text-emerald-600" />
+                  <PenLine className="h-5 w-5 text-[#0071e3]" />
                 )}
               </div>
               <div>
-                <div className="font-medium text-sm">在线填写</div>
-                <div className="text-xs text-gray-500">从空白开始，分模块编辑</div>
+                <div className="font-medium text-[14px] text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  在线填写
+                </div>
+                <div className="text-[12px] text-[#86868b]">
+                  从空白开始，分模块编辑
+                </div>
               </div>
             </button>
             <Link
               href="/templates"
               onClick={() => setNewResumeOpen(false)}
-              className="flex items-center gap-4 rounded-xl border p-4 text-left hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-4 rounded-xl border border-[#d2d2d7] dark:border-[#48484a] p-4 text-left hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                <Palette className="h-5 w-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] flex items-center justify-center shrink-0">
+                <Palette className="h-5 w-5 text-[#0071e3]" />
               </div>
               <div>
-                <div className="font-medium text-sm">从模板创建</div>
-                <div className="text-xs text-gray-500">选择行业模板，快速开始</div>
+                <div className="font-medium text-[14px] text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  从模板创建
+                </div>
+                <div className="text-[12px] text-[#86868b]">
+                  选择行业模板，快速开始
+                </div>
               </div>
             </Link>
           </div>
@@ -489,7 +521,10 @@ export default function DashboardPage() {
       </Dialog>
 
       {/* Delete confirmation dialog */}
-      <Dialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+      <Dialog
+        open={!!deleteConfirmId}
+        onOpenChange={() => setDeleteConfirmId(null)}
+      >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
@@ -498,13 +533,18 @@ export default function DashboardPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2 mt-2">
-            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmId(null)}
+              className="rounded-lg"
+            >
               取消
             </Button>
             <Button
               variant="destructive"
               onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
               disabled={actionLoading === deleteConfirmId}
+              className="rounded-lg bg-[#ff3b30] hover:bg-[#ff453a]"
             >
               {actionLoading === deleteConfirmId && (
                 <Loader2 className="h-4 w-4 mr-1 animate-spin" />
