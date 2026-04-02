@@ -21,7 +21,7 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 liquid-glass-nav">
       <nav className="mx-auto flex h-11 max-w-[980px] items-center justify-between px-4">
         <Link href="/" className="text-base font-semibold text-gray-900/90 tracking-tight">
-          ResumeBoost
+          Oct7
         </Link>
 
         <div className="hidden md:flex items-center gap-1">

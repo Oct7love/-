@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+docs
+tests
+.env
+.env.local
+.env.example
+.cursor
+docker-compose.yml
+deploy.sh
+vitest.config.ts

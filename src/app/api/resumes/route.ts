@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { resumes } from "@/lib/db/schema";
-import { eq, isNull, desc } from "drizzle-orm";
+import { eq, and, isNull, desc } from "drizzle-orm";
 import { z } from "zod";
+import { checkResumeLimit } from "@/lib/usage";
 
 const createResumeSchema = z.object({
   title: z.string().min(1).max(200).default("未命名简历"),
@@ -34,7 +35,12 @@ export async function GET() {
       createdAt: resumes.createdAt,
     })
     .from(resumes)
-    .where(eq(resumes.userId, session.user.id))
+    .where(
+      and(
+        eq(resumes.userId, session.user.id),
+        isNull(resumes.deletedAt)
+      )
+    )
     .orderBy(desc(resumes.updatedAt));
 
   return NextResponse.json({
@@ -68,6 +74,20 @@ export async function POST(req: NextRequest) {
           },
         },
         { status: 400 }
+      );
+    }
+
+    const quota = await checkResumeLimit(session.user.id);
+    if (!quota.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "PLAN_LIMIT_REACHED",
+            message: quota.message ?? "简历数量已达上限",
+          },
+        },
+        { status: 429 }
       );
     }
 

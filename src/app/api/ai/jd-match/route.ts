@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { generateText } from "ai";
 import { deepseek, MODELS } from "@/lib/ai/client";
+import { checkQuota, recordUsage } from "@/lib/usage";
 import {
   JD_MATCHER_SYSTEM_PROMPT,
   JD_MATCHER_USER_PROMPT,
@@ -13,6 +14,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { success: false, error: { code: "UNAUTHORIZED", message: "请先登录" } },
       { status: 401 }
+    );
+  }
+
+  const quota = await checkQuota(session.user.id, "jd_match");
+  if (!quota.allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: { code: "QUOTA_EXCEEDED", message: quota.message ?? "配额已用完" },
+      },
+      { status: 429 }
     );
   }
 
@@ -60,6 +72,8 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       );
     }
+
+    recordUsage(session.user.id, "jd_match");
 
     return NextResponse.json({
       success: true,

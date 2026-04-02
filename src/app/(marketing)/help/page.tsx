@@ -10,7 +10,7 @@ const faqCategories = [
     icon: FileText,
     items: [
       {
-        q: "如何开始使用 ResumeBoost？",
+        q: "如何开始使用 Oct7？",
         a: "注册账户后，你可以通过三种方式创建简历：上传已有的 PDF/Word 文件让 AI 自动解析、在线分模块填写、或从模板开始。创建完成后即可使用 AI 诊断和改写功能。",
       },
       {

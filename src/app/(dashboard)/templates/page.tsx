@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,7 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Check, Eye, Lock, Sparkles, Download, Users } from "lucide-react";
+import { toast } from "sonner";
+import { Check, Eye, Lock, Sparkles, Download, Users, Loader2 } from "lucide-react";
 
 const categories = [
   { id: "all", label: "全部", count: 16 },
@@ -211,8 +213,36 @@ function TemplatePreviewMock({
 }
 
 export default function TemplatesPage() {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState("all");
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  async function handleUseTemplate(template: (typeof templates)[0]) {
+    if (template.isPremium) {
+      toast.error("请先升级到专业版");
+      return;
+    }
+    setCreating(true);
+    try {
+      const res = await fetch("/api/resumes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: `${template.name}简历`,
+          sourceType: "template",
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setPreviewId(null);
+      router.push(`/editor/${data.data.id}`);
+    } catch {
+      toast.error("创建失败，请重试");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   const filtered =
     activeCategory === "all"
@@ -332,17 +362,17 @@ export default function TemplatesPage() {
                 <Button variant="outline" className="flex-1" onClick={() => setPreviewId(null)}>
                   关闭
                 </Button>
-                <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
-                  {previewTemplate.isPremium ? (
-                    <>
-                      <Lock className="h-3 w-3 mr-1" />
-                      升级使用
-                    </>
+                <Button
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                  onClick={() => handleUseTemplate(previewTemplate)}
+                  disabled={creating}
+                >
+                  {creating ? (
+                    <><Loader2 className="h-3 w-3 mr-1 animate-spin" />创建中</>
+                  ) : previewTemplate.isPremium ? (
+                    <><Lock className="h-3 w-3 mr-1" />升级使用</>
                   ) : (
-                    <>
-                      <Check className="h-3 w-3 mr-1" />
-                      使用模板
-                    </>
+                    <><Check className="h-3 w-3 mr-1" />使用模板</>
                   )}
                 </Button>
               </div>

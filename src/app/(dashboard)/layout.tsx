@@ -50,7 +50,7 @@ export default function DashboardLayout({
             className="flex items-center gap-2 font-bold text-lg"
           >
             <Sparkles className="h-5 w-5 text-emerald-600" />
-            ResumeBoost
+            Oct7
           </Link>
         </div>
 
@@ -96,7 +96,7 @@ export default function DashboardLayout({
         <header className="flex h-16 items-center justify-between border-b bg-white dark:bg-gray-950 dark:border-gray-800 px-6">
           <div className="md:hidden flex items-center gap-2 font-bold">
             <Sparkles className="h-5 w-5 text-emerald-600" />
-            ResumeBoost
+            Oct7
           </div>
 
           <div className="flex-1" />

@@ -12,7 +12,7 @@ export function Footer() {
       <div className="mx-auto max-w-[980px] px-4 py-5">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-gray-500/80">
-            Copyright &copy; {new Date().getFullYear()} ResumeBoost. 保留所有权利。
+            Copyright &copy; {new Date().getFullYear()} Oct7. 保留所有权利。
           </p>
           <div className="flex items-center gap-5">
             {footerLinks.map((link) => (

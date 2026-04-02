@@ -1,8 +1,9 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { env } from "@/lib/env";
 
 export const deepseek = createOpenAICompatible({
   name: "deepseek",
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
   baseURL: "https://api.deepseek.com/v1",
 });
 

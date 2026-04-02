@@ -1,8 +1,8 @@
 export const siteConfig = {
-  name: "ResumeBoost",
+  name: "Oct7",
   description: "AI 驱动的简历优化平台",
-  url: "https://resumeboost.com",
-  supportEmail: "support@resumeboost.com",
+  url: "https://oct7.com",
+  supportEmail: "support@oct7.com",
 
   limits: {
     free: {

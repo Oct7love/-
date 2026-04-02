@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ResumeBoost — AI 简历优化平台",
+  title: "Oct7 — AI 简历优化平台",
   description:
     "基于 AI 的在线简历优化平台，帮助求职者快速诊断、改写和美化简历，提升面试邀约率。",
   keywords: ["简历优化", "AI简历", "简历模板", "求职", "面试"],

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "隐私政策 — ResumeBoost",
+  title: "隐私政策 — Oct7",
 };
 
 export default function PrivacyPage() {

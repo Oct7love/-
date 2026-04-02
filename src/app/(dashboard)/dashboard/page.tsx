@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -17,6 +18,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -31,6 +33,7 @@ import { InterviewTips } from "@/components/shared/interview-tips";
 import { SelfIntroGenerator } from "@/components/shared/self-intro-generator";
 import { MockInterview } from "@/components/shared/mock-interview";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   Plus,
   Upload,
@@ -39,30 +42,22 @@ import {
   Pencil,
   Copy,
   Trash2,
-  Search,
   Sparkles,
   FileUp,
   PenLine,
   Palette,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 
-const mockResumes = [
-  {
-    id: "1",
-    title: "前端工程师简历",
-    status: "completed" as const,
-    lastScore: 78,
-    updatedAt: "3月28日",
-  },
-  {
-    id: "2",
-    title: "产品经理简历",
-    status: "draft" as const,
-    lastScore: null,
-    updatedAt: "3月29日",
-  },
-];
+interface Resume {
+  id: string;
+  title: string;
+  status: "draft" | "completed" | "archived";
+  lastScore: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
 
 const statusMap = {
   draft: { label: "草稿", variant: "secondary" as const },
@@ -77,9 +72,170 @@ function scoreColor(score: number) {
   return "text-red-500";
 }
 
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
 export default function DashboardPage() {
+  const router = useRouter();
   const [uploadOpen, setUploadOpen] = useState(false);
   const [newResumeOpen, setNewResumeOpen] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const fetchResumes = useCallback(async () => {
+    try {
+      const res = await fetch("/api/resumes");
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setResumes(data.data ?? []);
+    } catch {
+      toast.error("加载简历列表失败");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchResumes();
+  }, [fetchResumes]);
+
+  async function handleCreateResume(sourceType: "manual" | "template" = "manual", templateId?: string) {
+    setActionLoading("create");
+    try {
+      const res = await fetch("/api/resumes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "未命名简历",
+          sourceType,
+          templateId,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      router.push(`/editor/${data.data.id}`);
+    } catch {
+      toast.error("创建失败，请重试");
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setActionLoading(id);
+    try {
+      const res = await fetch(`/api/resumes/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setResumes((prev) => prev.filter((r) => r.id !== id));
+      toast.success("简历已删除");
+    } catch {
+      toast.error("删除失败");
+    } finally {
+      setActionLoading(null);
+      setDeleteConfirmId(null);
+    }
+  }
+
+  async function handleCopy(id: string) {
+    setActionLoading(id);
+    try {
+      const detailRes = await fetch(`/api/resumes/${id}`);
+      if (!detailRes.ok) throw new Error();
+      const detail = await detailRes.json();
+
+      const createRes = await fetch("/api/resumes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: `${detail.data.title} (副本)`,
+          sourceType: "manual",
+        }),
+      });
+      if (!createRes.ok) throw new Error();
+      const created = await createRes.json();
+
+      await fetch(`/api/resumes/${created.data.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: detail.data.content }),
+      });
+
+      fetchResumes();
+      toast.success("简历已复制");
+    } catch {
+      toast.error("复制失败");
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleUploadComplete(parsedContent: unknown) {
+    try {
+      const createRes = await fetch("/api/resumes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "已上传简历", sourceType: "upload" }),
+      });
+      if (!createRes.ok) throw new Error();
+      const created = await createRes.json();
+
+      await fetch(`/api/resumes/${created.data.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: parsedContent }),
+      });
+
+      setUploadOpen(false);
+      router.push(`/editor/${created.data.id}`);
+    } catch {
+      toast.error("保存失败");
+    }
+  }
+
+  const scoreData = resumes
+    .filter((r) => r.lastScore !== null)
+    .slice(0, 5)
+    .reverse()
+    .map((r) => ({
+      date: formatDate(r.updatedAt),
+      score: r.lastScore!,
+    }));
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-5xl space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-48 bg-gray-100 rounded mt-2 animate-pulse" />
+          </div>
+        </div>
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="pb-3">
+                <div className="h-12 w-12 rounded-2xl bg-gray-100" />
+                <div className="h-5 w-32 bg-gray-100 rounded mt-3" />
+                <div className="h-4 w-24 bg-gray-50 rounded mt-1" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 w-20 bg-gray-100 rounded mb-4" />
+                <div className="flex gap-2">
+                  <div className="h-8 flex-1 bg-gray-100 rounded" />
+                  <div className="h-8 flex-1 bg-gray-100 rounded" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -89,10 +245,7 @@ export default function DashboardPage() {
           <p className="text-gray-500 mt-1">管理和优化你的简历</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setUploadOpen(true)}
-          >
+          <Button variant="outline" onClick={() => setUploadOpen(true)}>
             <Upload className="mr-2 h-4 w-4" />
             上传简历
           </Button>
@@ -103,8 +256,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick start cards (show when no resumes) */}
-      {mockResumes.length === 0 && (
+      {resumes.length === 0 && (
         <div className="grid gap-4 md:grid-cols-3">
           <Card
             className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 border-dashed"
@@ -122,7 +274,7 @@ export default function DashboardPage() {
           </Card>
           <Card
             className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 border-dashed"
-            onClick={() => setNewResumeOpen(true)}
+            onClick={() => handleCreateResume("manual")}
           >
             <CardContent className="pt-6 text-center space-y-3">
               <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
@@ -150,10 +302,9 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Resume list */}
-      {mockResumes.length > 0 && (
+      {resumes.length > 0 && (
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {mockResumes.map((resume) => (
+          {resumes.map((resume) => (
             <Card
               key={resume.id}
               className="group transition-all hover:shadow-md hover:-translate-y-0.5"
@@ -168,11 +319,17 @@ export default function DashboardPage() {
                       <MoreVertical className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleCopy(resume.id)}
+                        disabled={actionLoading === resume.id}
+                      >
                         <Copy className="h-4 w-4 mr-2" />
                         复制
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
+                      <DropdownMenuItem
+                        className="text-red-600"
+                        onClick={() => setDeleteConfirmId(resume.id)}
+                      >
                         <Trash2 className="h-4 w-4 mr-2" />
                         删除
                       </DropdownMenuItem>
@@ -181,10 +338,10 @@ export default function DashboardPage() {
                 </div>
                 <CardTitle className="mt-3 text-lg">{resume.title}</CardTitle>
                 <CardDescription className="flex items-center gap-2">
-                  <Badge variant={statusMap[resume.status].variant}>
-                    {statusMap[resume.status].label}
+                  <Badge variant={statusMap[resume.status]?.variant ?? "secondary"}>
+                    {statusMap[resume.status]?.label ?? resume.status}
                   </Badge>
-                  <span>· 更新于 {resume.updatedAt}</span>
+                  <span>· 更新于 {formatDate(resume.updatedAt)}</span>
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -212,10 +369,16 @@ export default function DashboardPage() {
                     <Pencil className="mr-1 h-3 w-3" />
                     编辑
                   </Link>
-                  <Button size="sm" className="flex-1 bg-emerald-600 hover:bg-emerald-700">
-                    <Search className="mr-1 h-3 w-3" />
+                  <Link
+                    href={`/editor/${resume.id}`}
+                    className={cn(
+                      buttonVariants({ size: "sm" }),
+                      "flex-1 bg-emerald-600 hover:bg-emerald-700"
+                    )}
+                  >
+                    <Sparkles className="mr-1 h-3 w-3" />
                     诊断
-                  </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -225,15 +388,7 @@ export default function DashboardPage() {
 
       {/* Dashboard widgets */}
       <div className="grid gap-5 md:grid-cols-3">
-        <ScoreChart
-          data={[
-            { date: "3/20", score: 52 },
-            { date: "3/22", score: 61 },
-            { date: "3/24", score: 68 },
-            { date: "3/26", score: 72 },
-            { date: "3/28", score: 78 },
-          ]}
-        />
+        <ScoreChart data={scoreData} />
         <SalaryEstimator />
         <InterviewTips />
       </div>
@@ -250,21 +405,12 @@ export default function DashboardPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold">本月 AI 用量</span>
+              <span className="font-semibold">简历管理</span>
             </div>
             <p className="text-sm text-gray-600">
-              已使用 1/3 次 AI 诊断 · 0/3 次 AI 改写
+              共 {resumes.length} 份简历 ·{" "}
+              {resumes.filter((r) => r.lastScore !== null).length} 份已诊断
             </p>
-            <div className="flex gap-4">
-              <div>
-                <div className="text-xs text-gray-500 mb-1">诊断</div>
-                <Progress value={33} className="w-32 h-1.5" />
-              </div>
-              <div>
-                <div className="text-xs text-gray-500 mb-1">改写</div>
-                <Progress value={0} className="w-32 h-1.5" />
-              </div>
-            </div>
           </div>
           <Link
             href="/pricing"
@@ -280,10 +426,7 @@ export default function DashboardPage() {
       <UploadDialog
         open={uploadOpen}
         onOpenChange={setUploadOpen}
-        onUploadComplete={(content) => {
-          console.log("Parsed:", content);
-          setUploadOpen(false);
-        }}
+        onUploadComplete={handleUploadComplete}
       />
 
       {/* New resume dialog */}
@@ -308,19 +451,26 @@ export default function DashboardPage() {
                 <div className="text-xs text-gray-500">支持 PDF、Word、TXT 格式</div>
               </div>
             </button>
-            <Link
-              href="/editor/new"
-              onClick={() => setNewResumeOpen(false)}
-              className="flex items-center gap-4 rounded-xl border p-4 text-left hover:bg-gray-50 transition-colors"
+            <button
+              onClick={() => {
+                setNewResumeOpen(false);
+                handleCreateResume("manual");
+              }}
+              disabled={actionLoading === "create"}
+              className="flex items-center gap-4 rounded-xl border p-4 text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                <PenLine className="h-5 w-5 text-emerald-600" />
+                {actionLoading === "create" ? (
+                  <Loader2 className="h-5 w-5 text-emerald-600 animate-spin" />
+                ) : (
+                  <PenLine className="h-5 w-5 text-emerald-600" />
+                )}
               </div>
               <div>
                 <div className="font-medium text-sm">在线填写</div>
                 <div className="text-xs text-gray-500">从空白开始，分模块编辑</div>
               </div>
-            </Link>
+            </button>
             <Link
               href="/templates"
               onClick={() => setNewResumeOpen(false)}
@@ -334,6 +484,33 @@ export default function DashboardPage() {
                 <div className="text-xs text-gray-500">选择行业模板，快速开始</div>
               </div>
             </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>确认删除</DialogTitle>
+            <DialogDescription>
+              删除后无法恢复，确定要删除这份简历吗？
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-2">
+            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+              disabled={actionLoading === deleteConfirmId}
+            >
+              {actionLoading === deleteConfirmId && (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              )}
+              删除
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

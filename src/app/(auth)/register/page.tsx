@@ -44,7 +44,7 @@ export default function RegisterPage() {
       });
 
       if (signInResult?.ok) {
-        toast.success("欢迎使用 ResumeBoost");
+        toast.success("欢迎使用 Oct7");
         router.push("/dashboard");
         router.refresh();
       } else {

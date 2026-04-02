@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "使用条款 — ResumeBoost",
+  title: "使用条款 — Oct7",
 };
 
 export default function TermsPage() {
@@ -12,7 +12,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold">1. 服务概述</h2>
           <p className="text-gray-600 mt-2">
-            ResumeBoost 是一个基于 AI 的在线简历优化平台。使用本服务即表示你同意遵守这些条款。
+            Oct7 是一个基于 AI 的在线简历优化平台。使用本服务即表示你同意遵守这些条款。
           </p>
         </section>
 

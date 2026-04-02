@@ -10,7 +10,7 @@ export default function AuthLayout({
       <div className="absolute top-0 left-0 right-0">
         <div className="mx-auto flex h-12 max-w-[980px] items-center px-4">
           <Link href="/" className="text-[21px] font-semibold text-gray-900/90">
-            ResumeBoost
+            Oct7
           </Link>
         </div>
         <div className="h-px bg-gray-900/10" />

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { streamText } from "ai";
 import { deepseek, MODELS } from "@/lib/ai/client";
+import { checkQuota, recordUsage } from "@/lib/usage";
 import {
   RESUME_REWRITER_SYSTEM_PROMPT,
   RESUME_REWRITER_USER_PROMPT,
@@ -15,6 +16,14 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  const quota = await checkQuota(session.user.id, "rewrite");
+  if (!quota.allowed) {
+    return new Response(
+      JSON.stringify({ error: quota.message ?? "配额已用完" }),
+      { status: 429 }
+    );
+  }
+
   try {
     const { originalText, style = "concise", context } = await req.json();
 
@@ -24,6 +33,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    recordUsage(session.user.id, "rewrite");
 
     const result = streamText({
       model: deepseek(MODELS.chat),
