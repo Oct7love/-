@@ -8,6 +8,8 @@ import {
   RESUME_REWRITER_USER_PROMPT,
 } from "@/lib/ai/prompts/resume-rewriter";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {

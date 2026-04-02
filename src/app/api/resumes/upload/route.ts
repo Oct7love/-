@@ -7,6 +7,8 @@ import {
   RESUME_PARSER_USER_PROMPT,
 } from "@/lib/ai/prompts/resume-parser";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
