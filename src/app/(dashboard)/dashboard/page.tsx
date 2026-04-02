@@ -208,7 +208,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-5xl space-y-8">
+      <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
@@ -238,7 +238,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">我的简历</h1>
@@ -303,7 +303,7 @@ export default function DashboardPage() {
       )}
 
       {resumes.length > 0 && (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {resumes.map((resume) => (
             <Card
               key={resume.id}
@@ -387,14 +387,14 @@ export default function DashboardPage() {
       )}
 
       {/* Dashboard widgets */}
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3">
         <ScoreChart data={scoreData} />
         <SalaryEstimator />
         <InterviewTips />
       </div>
 
       {/* AI tools */}
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <SelfIntroGenerator />
         <MockInterview />
       </div>
