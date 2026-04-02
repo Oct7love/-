@@ -1,10 +1,9 @@
 export async function extractPdfText(buffer: Buffer): Promise<string> {
-  // pdf-parse has issues in serverless environments - it tries to load test files.
-  // Use the underlying pdf.js directly to avoid this.
-  const pdfParse = (await import("pdf-parse")).default;
+  // pdf-parse has issues in Vercel serverless: it tries to load test fixtures.
+  // Import the underlying pdf.js module directly to bypass this.
+  const mod = await import("pdf-parse/lib/pdf-parse.js");
+  const pdfParse = mod.default || mod;
 
-  const data = await pdfParse(buffer, {
-    max: 0, // no page limit
-  });
+  const data = await pdfParse(buffer);
   return data.text;
 }
