@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
 import { toast } from "sonner";
 
@@ -43,18 +40,18 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="text-center">
-        <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4">
-          <Mail className="h-6 w-6 text-emerald-600" />
+        <div className="mx-auto w-14 h-14 rounded-2xl bg-[#e8f5e9] dark:bg-[#1b3a26] flex items-center justify-center mb-5">
+          <Mail className="h-6 w-6 text-[#34c759] dark:text-[#30d158]" />
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+        <h1 className="text-[24px] font-semibold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
           检查你的邮箱
         </h1>
-        <p className="mt-2 text-gray-500 max-w-sm mx-auto">
-          如果该邮箱已注册，我们已向其发送了重置密码的链接。请检查收件箱（和垃圾邮件文件夹）。
+        <p className="mt-3 text-[14px] text-[#86868b] leading-relaxed max-w-[300px] mx-auto">
+          如果该邮箱已注册，我们已向其发送了重置密码的链接。请检查收件箱和垃圾邮件文件夹。
         </p>
         <Link
           href="/login"
-          className="inline-flex items-center gap-1 mt-6 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+          className="inline-flex items-center gap-1.5 mt-6 text-[14px] text-[#0071e3] hover:text-[#0077ED] font-medium transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           返回登录
@@ -64,43 +61,52 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="text-center">
-      <h1 className="text-[32px] font-semibold tracking-tight text-gray-900">
+    <>
+      <h1 className="text-[28px] font-semibold tracking-tight text-center text-[#1d1d1f] dark:text-[#f5f5f7] leading-tight">
         重置密码
       </h1>
-      <p className="mt-2 text-gray-500">
+      <p className="text-center text-[15px] text-[#86868b] mt-2 leading-relaxed">
         输入你的注册邮箱，我们将发送重置链接
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4 text-left">
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-xs text-gray-600">邮箱</Label>
-          <Input
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-[13px] font-medium text-[#6e6e73] dark:text-[#a1a1a6] mb-1.5"
+          >
+            邮箱地址
+          </label>
+          <input
             id="email"
             name="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="name@example.com"
             required
             autoComplete="email"
-            className="h-11 rounded-xl border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20"
+            className="w-full h-[46px] px-4 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#d2d2d7] dark:border-[#48484a] text-[15px] text-[#1d1d1f] dark:text-[#f5f5f7] placeholder:text-[#aeaeb2] focus:outline-none focus:ring-2 focus:ring-[#0071e3]/40 focus:border-[#0071e3] transition-all"
           />
         </div>
-        <Button
+
+        <button
           type="submit"
-          className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
           disabled={loading}
+          className="w-full h-[46px] rounded-xl bg-[#0071e3] text-white text-[15px] font-medium hover:bg-[#0077ED] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
         >
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           发送重置链接
-        </Button>
+        </button>
       </form>
 
-      <p className="mt-6 text-sm text-gray-500">
-        <Link href="/login" className="text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1">
-          <ArrowLeft className="h-3 w-3" />
+      <div className="mt-6 pt-5 border-t border-[#d2d2d7]/60 dark:border-[#38383a]">
+        <Link
+          href="/login"
+          className="flex items-center justify-center gap-1.5 text-[14px] text-[#0071e3] hover:text-[#0077ED] font-medium transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
           返回登录
         </Link>
-      </p>
-    </div>
+      </div>
+    </>
   );
 }
