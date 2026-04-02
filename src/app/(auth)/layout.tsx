@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SessionProvider } from "@/components/shared/session-provider";
 
 export default function AuthLayout({
   children,
@@ -6,18 +6,15 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white">
-      <div className="absolute top-0 left-0 right-0">
-        <div className="mx-auto flex h-12 max-w-[980px] items-center px-4">
-          <Link href="/" className="text-[21px] font-semibold text-gray-900/90">
-            Oct7
-          </Link>
+    <SessionProvider>
+      <div className="min-h-screen bg-white flex flex-col">
+        <div className="flex-1 flex items-center justify-center px-4 py-12">
+          {children}
         </div>
-        <div className="h-px bg-gray-900/10" />
+        <footer className="py-6 text-center text-[12px] text-gray-300">
+          &copy; {new Date().getFullYear()} Oct7
+        </footer>
       </div>
-      <div className="w-full max-w-[400px] px-4 py-20">
-        {children}
-      </div>
-    </div>
+    </SessionProvider>
   );
 }
