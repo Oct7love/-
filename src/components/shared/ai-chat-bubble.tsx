@@ -10,6 +10,17 @@ interface Message {
   content: string;
 }
 
+function renderMarkdown(text: string) {
+  return text
+    .replace(/### (.+)/g, '<strong class="block mt-2 mb-1">$1</strong>')
+    .replace(/## (.+)/g, '<strong class="block mt-2 mb-1 text-base">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/^- (.+)/gm, '<span class="block pl-3">• $1</span>')
+    .replace(/^(\d+)\. (.+)/gm, '<span class="block pl-3">$1. $2</span>')
+    .replace(/\n/g, "<br/>");
+}
+
 export function AiChatBubble() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -147,7 +158,11 @@ export function AiChatBubble() {
                   : "bg-white/70 text-gray-800 border border-gray-200/50 rounded-bl-sm"
               }`}
             >
-              {msg.content}
+              {msg.role === "assistant" ? (
+                <span dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
+              ) : (
+                msg.content
+              )}
               {loading && i === messages.length - 1 && msg.role === "assistant" && !msg.content && (
                 <div className="flex gap-1 py-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
