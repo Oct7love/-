@@ -133,7 +133,7 @@ function generateResumeHTML(
 <body>
   <h1>${esc(c.personalInfo?.name || "姓名")}</h1>
   <div class="contact">
-    ${[c.personalInfo?.phone, c.personalInfo?.email, c.personalInfo?.location].filter(Boolean).map(esc).join(" · ")}
+    ${[c.personalInfo?.phone, c.personalInfo?.email, c.personalInfo?.location].filter((v): v is string => Boolean(v)).map(esc).join(" · ")}
   </div>
   ${c.personalInfo?.summary ? `<div class="summary">${esc(c.personalInfo.summary)}</div>` : ""}
   <div class="divider"></div>
