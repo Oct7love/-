@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
           success: false,
           error: {
             code: "VALIDATION_ERROR",
-            message: parsed.error.errors[0]?.message ?? "请求参数校验失败",
+            message: parsed.error.issues[0]?.message ?? "请求参数校验失败",
           },
         },
         { status: 400 }
