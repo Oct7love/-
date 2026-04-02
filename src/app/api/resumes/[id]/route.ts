@@ -57,10 +57,10 @@ export async function PATCH(
 
   const updateResumeSchema = z.object({
     title: z.string().min(1).max(200).optional(),
-    content: z.record(z.unknown()).optional(),
+    content: z.record(z.string(), z.unknown()).optional(),
     status: z.enum(["draft", "completed", "archived"]).optional(),
     templateId: z.string().uuid().nullable().optional(),
-    templateConfig: z.record(z.unknown()).optional(),
+    templateConfig: z.record(z.string(), z.unknown()).optional(),
     lastScore: z.number().int().min(0).max(100).optional(),
     lastDiagnosedAt: z.coerce.date().optional(),
   });

@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/site";
 
 describe("siteConfig", () => {
   it("should have required fields", () => {
-    expect(siteConfig.name).toBe("ResumeBoost");
+    expect(siteConfig.name).toBe("Oct7");
     expect(siteConfig.description).toBeTruthy();
     expect(siteConfig.url).toMatch(/^https?:\/\//);
     expect(siteConfig.supportEmail).toMatch(/@/);
