@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    recordUsage(session.user.id, "jd_match");
+    await recordUsage(session.user.id, "jd_match");
 
     return NextResponse.json({
       success: true,

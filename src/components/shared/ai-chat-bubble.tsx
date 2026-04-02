@@ -10,8 +10,13 @@ interface Message {
   content: string;
 }
 
+function escapeHtml(str: string) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function renderMarkdown(text: string) {
-  return text
+  const safe = escapeHtml(text);
+  return safe
     .replace(/### (.+)/g, '<strong class="block mt-2 mb-1">$1</strong>')
     .replace(/## (.+)/g, '<strong class="block mt-2 mb-1 text-base">$1</strong>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
@@ -60,9 +65,8 @@ export function AiChatBubble() {
       const decoder = new TextDecoder();
       let assistantMsg = "";
 
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
-
       if (reader) {
+      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
@@ -72,15 +76,17 @@ export function AiChatBubble() {
             { role: "assistant", content: assistantMsg },
           ]);
         }
+      } else {
+        setMessages((prev) => [...prev, { role: "assistant", content: "服务响应异常，请重试。" }]);
       }
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "抱歉，服务暂时不可用，请稍后重试。",
-        },
-      ]);
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant" && !last.content) {
+          return [...prev.slice(0, -1), { role: "assistant", content: "抱歉，服务暂时不可用，请稍后重试。" }];
+        }
+        return [...prev, { role: "assistant", content: "抱歉，服务暂时不可用，请稍后重试。" }];
+      });
     } finally {
       setLoading(false);
     }

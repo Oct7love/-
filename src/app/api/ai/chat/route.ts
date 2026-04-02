@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { streamText } from "ai";
 import { deepseek, MODELS } from "@/lib/ai/client";
+import { checkQuota, recordUsage } from "@/lib/usage";
+
+export const maxDuration = 60;
 
 const SYSTEM_PROMPT = `你是 Oct7 的 AI 简历助手。你的职责是帮助用户优化简历。
 
@@ -23,12 +26,21 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  const quota = await checkQuota(session.user.id, "chat");
+  if (!quota.allowed) {
+    return new Response(JSON.stringify({ error: quota.message ?? "配额已用完" }), {
+      status: 429,
+    });
+  }
+
   try {
     const { message } = await req.json();
 
     if (!message) {
       return new Response("Message is required", { status: 400 });
     }
+
+    await recordUsage(session.user.id, "chat");
 
     const result = streamText({
       model: deepseek(MODELS.chat),

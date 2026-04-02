@@ -21,7 +21,10 @@ function AnimatedScore() {
   const [score, setScore] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => {
-      setScore((prev) => (prev >= 78 ? 78 : prev + 1));
+      setScore((prev) => {
+        if (prev >= 78) { clearInterval(timer); return 78; }
+        return prev + 1;
+      });
     }, 25);
     return () => clearInterval(timer);
   }, []);
@@ -55,7 +58,7 @@ function AnimatedScore() {
 
 function RewriteDemo() {
   const [show, setShow] = useState(false);
-  useEffect(() => { setTimeout(() => setShow(true), 800); }, []);
+  useEffect(() => { const t = setTimeout(() => setShow(true), 800); return () => clearTimeout(t); }, []);
   return (
     <div className="space-y-3">
       <div className="rounded-xl bg-white/50 backdrop-blur-sm border border-white/60 p-3 text-sm text-gray-400 line-through decoration-red-300/60">

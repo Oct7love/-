@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Target, Loader2, Check, X, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 interface JdMatchPanelProps {
   resumeContent: unknown;
@@ -60,6 +61,7 @@ export function JdMatchPanel({ resumeContent }: JdMatchPanelProps) {
       setResult(data.data);
     } catch {
       setResult(null);
+      toast.error("匹配分析失败，请稍后重试");
     } finally {
       setIsAnalyzing(false);
     }

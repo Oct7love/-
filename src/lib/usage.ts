@@ -38,8 +38,12 @@ export async function getUserUsage(userId: string): Promise<UsageSummary> {
       )
     );
 
-  const diagnoses = records.filter((r) => r.action === "diagnose").length;
-  const rewrites = records.filter((r) => r.action === "rewrite").length;
+  const diagnoses = records.filter(
+    (r) => r.action === "diagnose" || r.action === "jd_match"
+  ).length;
+  const rewrites = records.filter(
+    (r) => r.action === "rewrite" || r.action === "chat"
+  ).length;
 
   const resumeCountResult = await db
     .select({ count: count() })

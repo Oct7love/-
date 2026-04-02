@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,7 +151,10 @@ export default function EditorPage() {
     return () => reset();
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Save function
+  // Save function — use ref for title to avoid useCallback dependency churn
+  const titleRef = useRef(title);
+  titleRef.current = title;
+
   const saveToServer = useCallback(async (data: ResumeContent) => {
     if (!resumeId) return;
     setSaving(true);
@@ -159,7 +162,7 @@ export default function EditorPage() {
       const res = await fetch(`/api/resumes/${resumeId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: data, title }),
+        body: JSON.stringify({ content: data, title: titleRef.current }),
       });
       if (!res.ok) throw new Error();
       setDirty(false);
@@ -168,7 +171,7 @@ export default function EditorPage() {
     } finally {
       setSaving(false);
     }
-  }, [resumeId, title, setSaving, setDirty]);
+  }, [resumeId, setSaving, setDirty]);
 
   // Auto-save
   useAutoSave(content!, saveToServer, {

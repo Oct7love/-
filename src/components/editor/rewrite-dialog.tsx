@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,6 +35,13 @@ export function RewriteDialog({
   const [style, setStyle] = useState<RewriteStyle>("concise");
   const [rewrittenText, setRewrittenText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setRewrittenText("");
+      setIsLoading(false);
+    }
+  }, [open, originalText]);
 
   async function handleRewrite() {
     setIsLoading(true);

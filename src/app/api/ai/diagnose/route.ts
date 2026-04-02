@@ -4,7 +4,7 @@ import { generateText } from "ai";
 import { deepseek, MODELS } from "@/lib/ai/client";
 import { db } from "@/lib/db";
 import { diagnoses, diagnosisItems, resumes } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { checkQuota, recordUsage } from "@/lib/usage";
 import {
   RESUME_SCORER_SYSTEM_PROMPT,
@@ -120,7 +120,12 @@ export async function POST(req: NextRequest) {
             lastDiagnosedAt: new Date(),
             updatedAt: new Date(),
           })
-          .where(eq(resumes.id, resumeId));
+          .where(
+            and(
+              eq(resumes.id, resumeId),
+              eq(resumes.userId, session.user.id)
+            )
+          );
       } catch (dbErr) {
         console.error("Failed to persist diagnosis:", dbErr);
       }

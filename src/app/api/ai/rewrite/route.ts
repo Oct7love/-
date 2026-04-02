@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    recordUsage(session.user.id, "rewrite");
+    await recordUsage(session.user.id, "rewrite");
 
     const result = streamText({
       model: deepseek(MODELS.chat),

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { resumes } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 export async function POST(
   req: NextRequest,
@@ -22,7 +22,7 @@ export async function POST(
     const [resume] = await db
       .select()
       .from(resumes)
-      .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)))
+      .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id), isNull(resumes.deletedAt)))
       .limit(1);
 
     if (!resume) {
@@ -45,7 +45,7 @@ export async function POST(
     return new Response(htmlContent, {
       headers: {
         "Content-Type": "text/html; charset=utf-8",
-        "Content-Disposition": `inline; filename="${resume.title}.html"`,
+        "Content-Disposition": `inline; filename="${resume.title.replace(/[^\w\u4e00-\u9fff.-]/g, "_")}.html"`,
       },
     });
   } catch (error) {
@@ -58,6 +58,14 @@ export async function POST(
       { status: 500 }
     );
   }
+}
+
+function esc(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function generateResumeHTML(
@@ -123,7 +131,7 @@ function generateResumeHTML(
   </style>
 </head>
 <body>
-  <h1>${c.personalInfo?.name || "姓名"}</h1>
+  <h1>${esc(c.personalInfo?.name || "姓名")}</h1>
   <div class="contact">
     ${[c.personalInfo?.phone, c.personalInfo?.email, c.personalInfo?.location].filter(Boolean).join(" · ")}
   </div>

@@ -10,6 +10,8 @@ export function useAutoSave<T>(
   const debouncedData = useDebounce(data, delay);
   const isFirstRender = useRef(true);
   const isSaving = useRef(false);
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -20,8 +22,8 @@ export function useAutoSave<T>(
     if (!enabled || isSaving.current) return;
 
     isSaving.current = true;
-    onSave(debouncedData).finally(() => {
+    onSaveRef.current(debouncedData).finally(() => {
       isSaving.current = false;
     });
-  }, [debouncedData, enabled, onSave]);
+  }, [debouncedData, enabled]);
 }
