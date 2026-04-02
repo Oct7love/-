@@ -151,7 +151,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-[980px] px-4">
             <div className="inline-flex items-center gap-1.5 rounded-full liquid-glass px-3.5 py-1.5 text-xs text-emerald-700 mb-5" style={{borderRadius: '9999px'}}>
               <Sparkles className="h-3 w-3" />
-              AI 驱动 · 已帮助 10,000+ 求职者
+              注册即享 7 天 Pro · 无限 AI 对话
             </div>
             <h1 className="text-[48px] leading-[1.08] font-semibold tracking-[-0.003em] text-gray-900 sm:text-[64px]">
               让简历

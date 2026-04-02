@@ -1,7 +1,9 @@
 import { db } from "@/lib/db";
-import { usageRecords, subscriptions, plans, resumes } from "@/lib/db/schema";
+import { usageRecords, subscriptions, users, resumes } from "@/lib/db/schema";
 import { eq, and, gte, isNull, count } from "drizzle-orm";
 import { siteConfig } from "@/config/site";
+
+const TRIAL_DAYS = 7;
 
 type Action = "diagnose" | "rewrite" | "jd_match" | "chat";
 
@@ -69,10 +71,25 @@ export async function getUserPlanLimits(userId: string) {
     .limit(1);
 
   if (sub) {
-    return siteConfig.limits.pro;
+    return { ...siteConfig.limits.pro, isTrial: false, isPro: true };
   }
 
-  return siteConfig.limits.free;
+  // Check if user is within 7-day trial period
+  const [user] = await db
+    .select({ createdAt: users.createdAt })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (user?.createdAt) {
+    const trialEnd = new Date(user.createdAt);
+    trialEnd.setDate(trialEnd.getDate() + TRIAL_DAYS);
+    if (new Date() < trialEnd) {
+      return { ...siteConfig.limits.pro, isTrial: true, isPro: true, trialEndsAt: trialEnd };
+    }
+  }
+
+  return { ...siteConfig.limits.free, isTrial: false, isPro: false };
 }
 
 export async function checkQuota(

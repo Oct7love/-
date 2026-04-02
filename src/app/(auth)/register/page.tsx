@@ -63,7 +63,7 @@ export default function RegisterPage() {
         创建你的账户
       </h1>
       <p className="mt-2 text-gray-500">
-        免费开始优化你的简历
+        注册即享 <span className="text-emerald-600 font-semibold">7 天免费 Pro</span>，无限 AI 对话
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4 text-left">
