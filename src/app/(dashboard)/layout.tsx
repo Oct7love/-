@@ -141,7 +141,7 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
-      <AiChatBubble />
+      {!pathname.startsWith("/editor") && <AiChatBubble />}
     </div>
   );
 }
