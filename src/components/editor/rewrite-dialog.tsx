@@ -35,17 +35,20 @@ export function RewriteDialog({
   const [style, setStyle] = useState<RewriteStyle>("concise");
   const [rewrittenText, setRewrittenText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (open) {
       setRewrittenText("");
       setIsLoading(false);
+      setHasError(false);
     }
   }, [open, originalText]);
 
   async function handleRewrite() {
     setIsLoading(true);
     setRewrittenText("");
+    setHasError(false);
 
     try {
       const res = await fetch("/api/ai/rewrite", {
@@ -70,6 +73,7 @@ export function RewriteDialog({
       }
     } catch {
       setRewrittenText("改写失败，请重试");
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +160,7 @@ export function RewriteDialog({
             </Button>
             <Button
               onClick={handleAdopt}
-              disabled={!rewrittenText || isLoading}
+              disabled={!rewrittenText || isLoading || hasError}
             >
               <Check className="h-4 w-4 mr-1" />
               采纳修改

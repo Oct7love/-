@@ -1,12 +1,9 @@
-import { SessionProvider } from "@/components/shared/session-provider";
-
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-emerald-50/60 via-white to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-950">
         <header className="flex items-center justify-center py-8">
           <a
@@ -29,6 +26,5 @@ export default function AuthLayout({
           </p>
         </footer>
       </div>
-    </SessionProvider>
   );
 }

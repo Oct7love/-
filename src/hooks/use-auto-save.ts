@@ -10,6 +10,7 @@ export function useAutoSave<T>(
   const debouncedData = useDebounce(data, delay);
   const isFirstRender = useRef(true);
   const isSaving = useRef(false);
+  const pendingData = useRef<T | null>(null);
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
 
@@ -19,11 +20,24 @@ export function useAutoSave<T>(
       return;
     }
 
-    if (!enabled || isSaving.current) return;
+    if (!enabled) return;
+
+    if (isSaving.current) {
+      pendingData.current = debouncedData;
+      return;
+    }
 
     isSaving.current = true;
     onSaveRef.current(debouncedData).finally(() => {
       isSaving.current = false;
+      if (pendingData.current !== null) {
+        const pending = pendingData.current;
+        pendingData.current = null;
+        isSaving.current = true;
+        onSaveRef.current(pending).finally(() => {
+          isSaving.current = false;
+        });
+      }
     });
   }, [debouncedData, enabled]);
 }

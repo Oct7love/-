@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Check, Eye, Lock, Sparkles, Download, Users, Loader2 } from "lucide-react";
+import { Check, Eye, Lock, Sparkles, Users, Loader2 } from "lucide-react";
 
 const categories = [
   { id: "all", label: "全部", count: 16 },

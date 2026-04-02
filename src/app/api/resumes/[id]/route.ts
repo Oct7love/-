@@ -19,26 +19,34 @@ export async function GET(
 
   const { id } = await params;
 
-  const [resume] = await db
-    .select()
-    .from(resumes)
-    .where(
-      and(
-        eq(resumes.id, id),
-        eq(resumes.userId, session.user.id),
-        isNull(resumes.deletedAt)
+  try {
+    const [resume] = await db
+      .select()
+      .from(resumes)
+      .where(
+        and(
+          eq(resumes.id, id),
+          eq(resumes.userId, session.user.id),
+          isNull(resumes.deletedAt)
+        )
       )
-    )
-    .limit(1);
+      .limit(1);
 
-  if (!resume) {
+    if (!resume) {
+      return NextResponse.json(
+        { success: false, error: { code: "NOT_FOUND", message: "简历不存在" } },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: resume });
+  } catch (error) {
+    console.error("Get resume error:", error);
     return NextResponse.json(
-      { success: false, error: { code: "NOT_FOUND", message: "简历不存在" } },
-      { status: 404 }
+      { success: false, error: { code: "INTERNAL_ERROR", message: "服务器内部错误" } },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json({ success: true, data: resume });
 }
 
 export async function PATCH(
@@ -61,8 +69,6 @@ export async function PATCH(
     status: z.enum(["draft", "completed", "archived"]).optional(),
     templateId: z.string().uuid().nullable().optional(),
     templateConfig: z.record(z.string(), z.unknown()).optional(),
-    lastScore: z.number().int().min(0).max(100).optional(),
-    lastDiagnosedAt: z.coerce.date().optional(),
   });
 
   try {
@@ -169,27 +175,35 @@ export async function DELETE(
 
   const { id } = await params;
 
-  const [deleted] = await db
-    .update(resumes)
-    .set({ deletedAt: new Date() })
-    .where(
-      and(
-        eq(resumes.id, id),
-        eq(resumes.userId, session.user.id),
-        isNull(resumes.deletedAt)
+  try {
+    const [deleted] = await db
+      .update(resumes)
+      .set({ deletedAt: new Date() })
+      .where(
+        and(
+          eq(resumes.id, id),
+          eq(resumes.userId, session.user.id),
+          isNull(resumes.deletedAt)
+        )
       )
-    )
-    .returning({ id: resumes.id });
+      .returning({ id: resumes.id });
 
-  if (!deleted) {
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, error: { code: "NOT_FOUND", message: "简历不存在" } },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: { message: "简历已删除" },
+    });
+  } catch (error) {
+    console.error("Delete resume error:", error);
     return NextResponse.json(
-      { success: false, error: { code: "NOT_FOUND", message: "简历不存在" } },
-      { status: 404 }
+      { success: false, error: { code: "INTERNAL_ERROR", message: "服务器内部错误" } },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json({
-    success: true,
-    data: { message: "简历已删除" },
-  });
 }

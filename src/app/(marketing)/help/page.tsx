@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Search, Sparkles, Target, Palette, Upload, FileText, Download } from "lucide-react";
+import { ChevronDown, Search, Sparkles, Target, Palette, FileText, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const faqCategories = [

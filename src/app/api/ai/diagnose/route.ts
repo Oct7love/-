@@ -80,6 +80,19 @@ export async function POST(req: NextRequest) {
 
     if (resumeId) {
       try {
+        const [owned] = await db
+          .select({ id: resumes.id })
+          .from(resumes)
+          .where(and(eq(resumes.id, resumeId), eq(resumes.userId, session.user.id)))
+          .limit(1);
+
+        if (!owned) {
+          return NextResponse.json(
+            { success: false, error: { code: "FORBIDDEN", message: "无权操作此简历" } },
+            { status: 403 }
+          );
+        }
+
         const [diagRecord] = await db
           .insert(diagnoses)
           .values({

@@ -108,7 +108,7 @@ function generateResumeHTML(
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>${title}</title>
+  <title>${esc(title)}</title>
   <style>
     @page { size: A4; margin: 15mm; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -133,9 +133,9 @@ function generateResumeHTML(
 <body>
   <h1>${esc(c.personalInfo?.name || "姓名")}</h1>
   <div class="contact">
-    ${[c.personalInfo?.phone, c.personalInfo?.email, c.personalInfo?.location].filter(Boolean).join(" · ")}
+    ${[c.personalInfo?.phone, c.personalInfo?.email, c.personalInfo?.location].filter(Boolean).map(esc).join(" · ")}
   </div>
-  ${c.personalInfo?.summary ? `<div class="summary">${c.personalInfo.summary}</div>` : ""}
+  ${c.personalInfo?.summary ? `<div class="summary">${esc(c.personalInfo.summary)}</div>` : ""}
   <div class="divider"></div>
 
   ${
@@ -143,8 +143,8 @@ function generateResumeHTML(
       ? `<h2>教育背景</h2>${c.education
           .map(
             (e) => `<div class="item">
-    <div class="item-header"><span class="title">${e.school}</span><span class="date">${e.startDate} — ${e.endDate}</span></div>
-    <div class="item-sub">${e.degree} · ${e.major}</div>
+    <div class="item-header"><span class="title">${esc(e.school ?? "")}</span><span class="date">${esc(e.startDate ?? "")} — ${esc(e.endDate ?? "")}</span></div>
+    <div class="item-sub">${esc(e.degree ?? "")} · ${esc(e.major ?? "")}</div>
   </div>`
           )
           .join("")}`
@@ -156,9 +156,9 @@ function generateResumeHTML(
       ? `<h2>工作经历</h2>${c.workExperience
           .map(
             (e) => `<div class="item">
-    <div class="item-header"><span class="title">${e.company}</span><span class="date">${e.startDate} — ${e.isCurrent ? "至今" : e.endDate}</span></div>
-    <div class="item-sub">${e.position}</div>
-    ${e.highlights?.filter(Boolean).length ? `<ul>${e.highlights.filter(Boolean).map((h) => `<li>${h}</li>`).join("")}</ul>` : ""}
+    <div class="item-header"><span class="title">${esc(e.company ?? "")}</span><span class="date">${esc(e.startDate ?? "")} — ${e.isCurrent ? "至今" : esc(e.endDate ?? "")}</span></div>
+    <div class="item-sub">${esc(e.position ?? "")}</div>
+    ${e.highlights?.filter(Boolean).length ? `<ul>${e.highlights.filter(Boolean).map((h) => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
   </div>`
           )
           .join("")}`
@@ -170,10 +170,10 @@ function generateResumeHTML(
       ? `<h2>项目经历</h2>${c.projects
           .map(
             (p) => `<div class="item">
-    <div class="item-header"><span class="title">${p.name}</span></div>
-    ${p.role ? `<div class="item-sub">${p.role}</div>` : ""}
-    ${p.description ? `<div>${p.description}</div>` : ""}
-    ${p.techStack?.length ? `<div class="skills-list" style="margin-top:4px">${p.techStack.map((t) => `<span class="skill-tag">${t}</span>`).join("")}</div>` : ""}
+    <div class="item-header"><span class="title">${esc(p.name ?? "")}</span></div>
+    ${p.role ? `<div class="item-sub">${esc(p.role)}</div>` : ""}
+    ${p.description ? `<div>${esc(p.description)}</div>` : ""}
+    ${p.techStack?.length ? `<div class="skills-list" style="margin-top:4px">${p.techStack.map((t) => `<span class="skill-tag">${esc(t)}</span>`).join("")}</div>` : ""}
   </div>`
           )
           .join("")}`
@@ -182,10 +182,10 @@ function generateResumeHTML(
 
   ${
     c.skills?.technical?.length
-      ? `<h2>技能特长</h2><div class="skills-list">${c.skills.technical.map((s) => `<span class="skill-tag">${s}</span>`).join("")}</div>`
+      ? `<h2>技能特长</h2><div class="skills-list">${c.skills.technical.map((s) => `<span class="skill-tag">${esc(s)}</span>`).join("")}</div>`
       : ""
   }
-  ${c.skills?.certifications?.length ? `<div style="margin-top:6px"><strong>证书：</strong>${c.skills.certifications.join(", ")}</div>` : ""}
+  ${c.skills?.certifications?.length ? `<div style="margin-top:6px"><strong>证书：</strong>${c.skills.certifications.map(esc).join(", ")}</div>` : ""}
 </body>
 </html>`;
 }

@@ -16,10 +16,12 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
       <div className="text-center max-w-md px-4">
         <AlertTriangle className="h-16 w-16 text-amber-400 mx-auto" />
-        <h2 className="mt-4 text-2xl font-bold text-gray-900">出了点问题</h2>
+        <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+          出了点问题
+        </h2>
         <p className="mt-2 text-gray-500">
           抱歉，页面遇到了错误。请尝试刷新页面或返回首页。
         </p>
