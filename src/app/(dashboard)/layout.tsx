@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  Sparkles,
   LayoutDashboard,
   Palette,
   Settings,
@@ -40,50 +41,53 @@ export default function DashboardLayout({
   const userInitial = userName[0]?.toUpperCase() || "U";
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5f7] dark:bg-[#111111]">
-      <aside className="hidden md:flex w-[220px] flex-col bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-xl border-r border-[#d2d2d7]/50 dark:border-[#38383a]">
-        <div className="flex h-[52px] items-center px-5">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
+      <aside className="hidden md:flex w-60 flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800">
+        <div className="flex h-14 items-center gap-2 border-b border-gray-100 dark:border-gray-800 px-5">
           <Link
             href="/dashboard"
-            className="text-[15px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+            className="flex items-center gap-2 text-lg font-bold"
           >
-            Oct7
+            <Sparkles className="h-5 w-5 text-emerald-500" />
+            <span className="text-gray-900 dark:text-white">
+              <span className="text-emerald-500">Oct</span>7
+            </span>
           </Link>
         </div>
 
-        <nav className="flex-1 px-3 pt-1 space-y-0.5">
+        <nav className="flex-1 p-3 space-y-0.5">
           {sidebarItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] font-medium transition-colors",
+                "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
                 pathname === item.href
-                  ? "bg-[#0071e3]/10 text-[#0071e3]"
-                  : "text-[#6e6e73] hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e]"
+                  ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
               )}
             >
-              <item.icon className="h-[16px] w-[16px]" />
+              <item.icon className="h-4 w-4" />
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="border-t border-[#d2d2d7]/50 dark:border-[#38383a] p-3">
+        <div className="border-t border-gray-100 dark:border-gray-800 p-3">
           <div className="flex items-center gap-2.5 px-2">
-            <Avatar className="h-7 w-7">
+            <Avatar className="h-8 w-8">
               {session?.user?.image && (
                 <AvatarImage src={session.user.image} />
               )}
-              <AvatarFallback className="bg-[#e8e8ed] dark:bg-[#38383a] text-[#6e6e73] text-[11px]">
+              <AvatarFallback className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs">
                 {userInitial}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
-              <p className="text-[13px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                 {userName}
               </p>
-              <p className="text-[11px] text-[#86868b] truncate">
+              <p className="text-xs text-gray-400 truncate">
                 {session?.user?.email}
               </p>
             </div>
@@ -92,9 +96,10 @@ export default function DashboardLayout({
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex h-[52px] items-center justify-between bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-xl border-b border-[#d2d2d7]/50 dark:border-[#38383a] px-5">
-          <div className="md:hidden text-[15px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
-            Oct7
+        <header className="flex h-14 items-center justify-between bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5">
+          <div className="md:hidden flex items-center gap-2 font-bold">
+            <Sparkles className="h-5 w-5 text-emerald-500" />
+            <span className="text-gray-900 dark:text-white">Oct7</span>
           </div>
 
           <div className="flex-1" />
@@ -103,16 +108,16 @@ export default function DashboardLayout({
             <ThemeToggle />
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] font-medium hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] transition-colors outline-none">
-                <Avatar className="h-7 w-7">
+              <DropdownMenuTrigger className="inline-flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors outline-none">
+                <Avatar className="h-8 w-8">
                   {session?.user?.image && (
                     <AvatarImage src={session.user.image} />
                   )}
-                  <AvatarFallback className="bg-[#e8e8ed] dark:bg-[#38383a] text-[#6e6e73] text-[11px]">
+                  <AvatarFallback className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs">
                     {userInitial}
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:inline text-[13px] text-[#1d1d1f] dark:text-[#f5f5f7]">
+                <span className="hidden sm:inline text-sm text-gray-700 dark:text-gray-300">
                   {userName}
                 </span>
               </DropdownMenuTrigger>
@@ -128,7 +133,7 @@ export default function DashboardLayout({
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="text-[#ff3b30]"
+                  className="text-red-500"
                   onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
