@@ -171,9 +171,9 @@ export default function EditorPage() {
   }, [resumeId, title, setSaving, setDirty]);
 
   // Auto-save
-  useAutoSave(content, saveToServer, {
+  useAutoSave(content!, saveToServer, {
     delay: 3000,
-    enabled: isDirty && !!resumeId,
+    enabled: isDirty && !!resumeId && !!content,
   });
 
   // Warn before leaving with unsaved changes
