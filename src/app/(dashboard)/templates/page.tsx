@@ -130,35 +130,45 @@ function TemplatePreviewMock({
   accent: string;
   variant?: number;
 }) {
+  const nameStyle = { color: primary, fontSize: "8px", fontWeight: 700 };
+  const sectionStyle = { color: primary, fontSize: "6px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.5px", borderBottom: `1px solid ${primary}30`, paddingBottom: "2px", marginBottom: "3px" };
+  const textStyle = { fontSize: "5px", color: "#374151", lineHeight: 1.5 };
+  const subStyle = { fontSize: "4.5px", color: "#6B7280" };
+  const tagStyle = { fontSize: "4px", padding: "1px 3px", borderRadius: "6px", backgroundColor: accent, color: primary, display: "inline-block" };
+
   if (variant % 3 === 1) {
     return (
-      <div className="h-full flex">
-        <div className="w-[35%] p-3" style={{ backgroundColor: primary }}>
-          <div className="w-8 h-8 rounded-full bg-white/30 mb-3" />
-          <div className="h-1.5 w-12 bg-white/50 rounded mb-1" />
-          <div className="h-1 w-10 bg-white/30 rounded mb-3" />
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i}>
-                <div className="h-1 w-8 bg-white/40 rounded mb-0.5" />
-                <div className="h-0.5 w-full bg-white/20 rounded" />
-              </div>
+      <div className="h-full flex" style={{ fontFamily: "system-ui" }}>
+        <div className="w-[35%] p-2.5" style={{ backgroundColor: primary }}>
+          <div className="w-7 h-7 rounded-full bg-white/30 mx-auto mb-2" />
+          <div className="text-center" style={{ fontSize: "6px", color: "white", fontWeight: 600 }}>张三</div>
+          <div className="text-center" style={{ fontSize: "4px", color: "rgba(255,255,255,0.6)", marginTop: "2px" }}>前端工程师</div>
+          <div className="mt-3 space-y-2">
+            {["138****8000", "test@qq.com", "北京"].map((t) => (
+              <div key={t} style={{ fontSize: "4px", color: "rgba(255,255,255,0.5)" }}>{t}</div>
             ))}
           </div>
-          <div className="mt-3 flex gap-1 flex-wrap">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-3 px-1 rounded-full bg-white/20 text-[5px]" />
-            ))}
+          <div className="mt-3">
+            <div style={{ fontSize: "4.5px", color: "rgba(255,255,255,0.7)", fontWeight: 600, marginBottom: "3px" }}>技能</div>
+            <div className="flex gap-0.5 flex-wrap">
+              {["React", "TS", "Node"].map((s) => (
+                <span key={s} style={{ fontSize: "3.5px", padding: "1px 3px", borderRadius: "4px", backgroundColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}>{s}</span>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="flex-1 p-3 space-y-2">
-          <div className="h-2 w-20 rounded" style={{ backgroundColor: primary }} />
-          <div className="h-1 w-full rounded bg-gray-100" />
-          <div className="h-1 w-4/5 rounded bg-gray-100" />
-          <div className="h-2 w-14 rounded mt-2" style={{ backgroundColor: primary }} />
-          <div className="h-1 w-full rounded bg-gray-100" />
-          <div className="h-1 w-3/4 rounded bg-gray-100" />
-          <div className="h-1 w-5/6 rounded bg-gray-100" />
+        <div className="flex-1 p-2.5 space-y-2">
+          <div>
+            <div style={sectionStyle}>工作经历</div>
+            <div style={{ ...textStyle, fontWeight: 600 }}>字节跳动 · 高级前端</div>
+            <div style={subStyle}>2022 - 至今</div>
+            <div style={textStyle}>主导性能优化，首屏加载降至 1.8s</div>
+          </div>
+          <div>
+            <div style={sectionStyle}>教育背景</div>
+            <div style={{ ...textStyle, fontWeight: 600 }}>北京大学 · 计算机科学</div>
+            <div style={subStyle}>2016 - 2020 · 本科</div>
+          </div>
         </div>
       </div>
     );
@@ -166,46 +176,56 @@ function TemplatePreviewMock({
 
   if (variant % 3 === 2) {
     return (
-      <div className="h-full">
-        <div className="p-3 pb-2" style={{ backgroundColor: primary }}>
-          <div className="h-2.5 w-20 bg-white/80 rounded" />
-          <div className="h-1 w-32 bg-white/40 rounded mt-1" />
+      <div className="h-full" style={{ fontFamily: "system-ui" }}>
+        <div className="p-2.5 pb-2" style={{ backgroundColor: primary }}>
+          <div style={{ fontSize: "8px", fontWeight: 700, color: "white" }}>张三</div>
+          <div style={{ fontSize: "4.5px", color: "rgba(255,255,255,0.7)", marginTop: "2px" }}>5年前端开发经验，专注于性能优化</div>
+          <div style={{ fontSize: "4px", color: "rgba(255,255,255,0.5)", marginTop: "3px" }}>138****8000 · test@qq.com · 北京</div>
         </div>
-        <div className="p-3 space-y-2">
+        <div className="p-2.5 space-y-2">
           <div className="flex gap-1 flex-wrap">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-3 px-2 rounded-full text-[5px]" style={{ backgroundColor: accent, color: primary }} />
+            {["React", "TypeScript", "Node.js", "Vue"].map((s) => (
+              <span key={s} style={tagStyle}>{s}</span>
             ))}
           </div>
-          <div className="h-1.5 w-14 rounded" style={{ backgroundColor: primary }} />
-          <div className="h-1 w-full rounded bg-gray-100" />
-          <div className="h-1 w-4/5 rounded bg-gray-100" />
-          <div className="h-1.5 w-14 rounded mt-1" style={{ backgroundColor: primary }} />
-          <div className="h-1 w-full rounded bg-gray-100" />
-          <div className="h-1 w-3/4 rounded bg-gray-100" />
-          <div className="h-1 w-5/6 rounded bg-gray-100" />
+          <div>
+            <div style={sectionStyle}>工作经历</div>
+            <div style={{ ...textStyle, fontWeight: 600 }}>字节跳动 · 高级前端工程师</div>
+            <div style={subStyle}>2022.03 - 至今</div>
+            <div style={textStyle}>• 主导前端性能优化，提升 44%</div>
+            <div style={textStyle}>• 搭建组件库，覆盖 50+ 场景</div>
+          </div>
+          <div>
+            <div style={sectionStyle}>教育背景</div>
+            <div style={{ ...textStyle, fontWeight: 600 }}>北京大学 · 计算机科学 · 本科</div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full p-3 space-y-2">
+    <div className="h-full p-3 space-y-1.5" style={{ fontFamily: "system-ui" }}>
       <div className="text-center mb-2">
-        <div className="h-2.5 w-16 mx-auto rounded" style={{ backgroundColor: primary }} />
-        <div className="h-1 w-28 mx-auto rounded bg-gray-200 mt-1" />
+        <div style={nameStyle}>张三</div>
+        <div style={{ fontSize: "4px", color: "#9CA3AF", marginTop: "2px" }}>138****8000 · test@qq.com · 北京</div>
+        <div style={{ fontSize: "4.5px", color: "#6B7280", marginTop: "3px", maxWidth: "90%", marginLeft: "auto", marginRight: "auto" }}>5年前端经验，专注 React 性能优化</div>
       </div>
       <div className="h-px w-full" style={{ backgroundColor: primary, opacity: 0.2 }} />
-      <div className="h-1.5 w-12 rounded" style={{ backgroundColor: primary }} />
-      <div className="h-1 w-full rounded bg-gray-100" />
-      <div className="h-1 w-4/5 rounded bg-gray-100" />
-      <div className="h-1.5 w-12 rounded mt-1" style={{ backgroundColor: primary }} />
-      <div className="h-1 w-full rounded bg-gray-100" />
-      <div className="h-1 w-3/4 rounded bg-gray-100" />
-      <div className="h-1 w-5/6 rounded bg-gray-100" />
-      <div className="flex gap-1 flex-wrap mt-1">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-3 px-1.5 rounded-full text-[5px]" style={{ backgroundColor: accent, color: primary }} />
+      <div>
+        <div style={sectionStyle}>工作经历</div>
+        <div className="flex justify-between"><span style={{ ...textStyle, fontWeight: 600 }}>字节跳动</span><span style={subStyle}>2022 - 至今</span></div>
+        <div style={subStyle}>高级前端工程师</div>
+        <div style={textStyle}>• 首屏加载从 3.2s 降至 1.8s</div>
+      </div>
+      <div>
+        <div style={sectionStyle}>教育背景</div>
+        <div className="flex justify-between"><span style={{ ...textStyle, fontWeight: 600 }}>北京大学</span><span style={subStyle}>2016 - 2020</span></div>
+        <div style={subStyle}>计算机科学 · 本科</div>
+      </div>
+      <div className="flex gap-0.5 flex-wrap mt-1">
+        {["React", "TS", "Node"].map((s) => (
+          <span key={s} style={tagStyle}>{s}</span>
         ))}
       </div>
     </div>
