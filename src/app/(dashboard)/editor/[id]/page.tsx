@@ -362,7 +362,7 @@ export default function EditorPage() {
       {/* Main editor area */}
       <div className="flex flex-1 overflow-hidden mt-4 gap-4">
         {/* Left sidebar - section nav */}
-        <div className="w-48 shrink-0 space-y-1">
+        <div className="w-44 shrink-0 space-y-1 hidden md:block">
           {content.sectionOrder.map((section) => {
             const Icon = sectionIcons[section] || User;
             return (
@@ -591,7 +591,7 @@ export default function EditorPage() {
         </div>
 
         {/* Right sidebar - tabs for AI/Preview */}
-        <div className="w-80 shrink-0 overflow-y-auto max-h-[calc(100vh-8rem)] pb-4">
+        <div className="w-72 shrink-0 overflow-y-auto max-h-[calc(100vh-8rem)] pb-4 hidden lg:block">
           <Tabs value={rightTab} onValueChange={setRightTab}>
             <TabsList className="w-full">
               <TabsTrigger value="ai" className="flex-1">
